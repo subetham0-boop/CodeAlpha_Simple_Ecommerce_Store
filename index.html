@@ -1,0 +1,306 @@
+<<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlphaShop | Premium E-Commerce Store</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #10b981;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light);
+            color: var(--dark);
+        }
+
+        /* Navigation Bar */
+        nav {
+            background-color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-outline { border: 1px solid var(--border); background: transparent; color: var(--dark); }
+        .btn-outline:hover { background-color: #f1f5f9; }
+
+        /* Main Layout */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            padding: 3rem;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+        }
+
+        .product-price {
+            font-size: 1.25rem;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .product-card .btn { margin-top: auto; width: 100%; }
+
+        /* Modal / Shopping Cart Side Panel */
+        .cart-modal {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 350px;
+            height: 100%;
+            background: white;
+            box-shadow: -5px 0 25px rgba(0,0,0,0.15);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-modal.active { right: 0; }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+        .cart-items-list { flex-grow: 1; overflow-y: auto; margin-top: 1rem; }
+        .cart-item { display: flex; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #f1f5f9; }
+        .cart-total-section { border-top: 1px solid var(--border); padding-top: 1rem; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#" class="logo">AlphaShop</a>
+        <div class="nav-actions">
+            <span id="user-welcome"></span>
+            <button class="btn btn-outline" id="auth-btn" onclick="toggleAuthView()">Login / Register</button>
+            <button class="btn btn-primary" onclick="toggleCart()">Cart (<span id="cart-count">0</span>)</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="auth-block" style="display: none; background: white; padding: 1.5rem; border: 1px solid var(--border); border-radius: 0.5rem; margin-bottom: 2rem; max-width: 400px;">
+            <h3 id="auth-title">Account Access</h3>
+            <input type="text" id="username-input" placeholder="Username" style="width:94%; padding:0.5rem; margin-bottom:0.5rem; border:1px solid var(--border); border-radius:4px;"><br>
+            <input type="password" id="password-input" placeholder="Password" style="width:94%; padding:0.5rem; margin-bottom:1rem; border:1px solid var(--border); border-radius:4px;"><br>
+            <button class="btn btn-primary" onclick="handleAuth('login')">Login</button>
+            <button class="btn btn-outline" onclick="handleAuth('register')">Register Account</button>
+        </div>
+
+        <div class="hero">
+            <h1>Welcome to AlphaShop</h1>
+            <p>Experience seamless end-to-end full stack execution built from scratch.</p>
+        </div>
+
+        <h2>Featured Products</h2>
+        <div id="products-container" class="product-grid"></div>
+    </div>
+
+    <div id="cart-drawer" class="cart-modal">
+        <div class="cart-header">
+            <h3>Your Shopping Cart</h3>
+            <button class="btn btn-outline" onclick="toggleCart()">X</button>
+        </div>
+        <div id="cart-items-list" class="cart-items-list">
+            <p style="color: #64748b;">Your cart is empty.</p>
+        </div>
+        <div class="cart-total-section">
+            <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 1rem;">
+                <span>Total:</span>
+                <span id="cart-total-amount">$0.00</span>
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="submitCheckout()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = "http://localhost:5000/api";
+        let cart = [];
+        let loggedInUser = null;
+
+        // Toggle Views
+        function toggleCart() { document.getElementById('cart-drawer').classList.toggle('active'); }
+        function toggleAuthView() {
+            const block = document.getElementById('auth-block');
+            block.style.display = block.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Fetch Products
+        async function fetchProducts() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/products`);
+                const products = await response.json();
+                const container = document.getElementById('products-container');
+                
+                container.innerHTML = products.map(prod => `
+                    <div class="product-card">
+                        <img src="${prod.image}" class="product-image" alt="${prod.name}">
+                        <div class="product-info">
+                            <h3 class="product-title">${prod.name}</h3>
+                            <div class="product-price">$${prod.price}</div>
+                            <button class="btn btn-primary" onclick="addToCart('${prod.name}', ${prod.price})">Add to Cart</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error("Failed to fetch backend metrics", err);
+            }
+        }
+
+        // Auth Logic
+        async function handleAuth(action) {
+            const user = document.getElementById('username-input').value;
+            const pass = document.getElementById('password-input').value;
+            if(!user || !pass) return alert("Please fill in both fields");
+
+            const route = action === 'login' ? '/login' : '/register';
+            const response = await fetch(`${BACKEND_URL}${route}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username: user, password: pass })
+            });
+            const data = await response.json();
+            alert(data.message);
+
+            if(response.ok && action === 'login') {
+                loggedInUser = user;
+                document.getElementById('user-welcome').innerText = `Hello, ${user}!`;
+                document.getElementById('auth-btn').style.display = 'none';
+                document.getElementById('auth-block').style.display = 'none';
+            }
+        }
+
+        // Cart Logic
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            document.getElementById('cart-count').innerText = cart.length;
+            const list = document.getElementById('cart-items-list');
+            
+            if(cart.length === 0) {
+                list.innerHTML = `<p style="color: #64748b;">Your cart is empty.</p>`;
+                document.getElementById('cart-total-amount').innerText = "$0.00";
+                return;
+            }
+
+            list.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <span>${item.name}</span>
+                    <span style="font-weight:600;">$${item.price}</span>
+                </div>
+            `).join('');
+
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            document.getElementById('cart-total-amount').innerText = `$${total.toFixed(2)}`;
+        }
+
+        // Place Order
+        async function submitCheckout() {
+            if(!loggedInUser) return alert("Please log in before checking out!");
+            if(cart.length === 0) return alert("Your cart is empty!");
+
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            const response = await fetch(`${BACKEND_URL}/orders`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username: loggedInUser, items: cart, total: total })
+            });
+
+            const data = await response.json();
+            alert(`Order Complete! ID: ${data.orderId}`);
+            cart = [];
+            updateCartUI();
+            toggleCart();
+        }
+
+        window.onload = fetchProducts;
+    </script>
+</body>
+</html>
